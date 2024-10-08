@@ -55,7 +55,7 @@ struct MainScreenView: View {
     let modelContext = container.mainContext
     
     let streaks = [
-        Streak(name: "Car", goal: 1000, moneyCount: 120.60, streakDescription: "My Dream Car"),
+        Streak(name: "Car", goal: 1000, moneyCount: 800.60, streakDescription: "My Dream Car"),
         Streak(name: "House", goal: 10000, moneyCount: 1924, streakDescription: "My Dream House")
     ]
     

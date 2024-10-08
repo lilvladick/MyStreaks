@@ -1,7 +1,14 @@
 import SwiftUI
 
 struct StreakCellView: View {
+    @State var progress: CGFloat = 0
     let streak: Streak
+    @State private var maxProgress: CGFloat
+
+    init(streak: Streak) {
+        self.streak = streak
+        self._maxProgress = State(initialValue: CGFloat(streak.goal))
+    }
     
     var body: some View {
         VStack {
@@ -15,6 +22,7 @@ struct StreakCellView: View {
                 
                 Text("\(streak.goal) $").bold().font(.title3).padding(.leading, 10)
             }
+            
             ZStack(alignment: .leading) {
                 RoundedRectangle(cornerRadius: 30)
                     .frame(width: .infinity, height: 15)
@@ -23,10 +31,16 @@ struct StreakCellView: View {
                 
                 RoundedRectangle(cornerRadius: 30)
                     .frame(
-                        width: CGFloat(streak.moneyCount) / CGFloat(streak.goal) * UIScreen.main.bounds.width * 0.7,
+                        width: progress / maxProgress * UIScreen.main.bounds.width * 0.7,
                         height: 15
                     )
                     .foregroundColor(.blue)
+                    .transition(.move(edge: .trailing))
+                    .onAppear {
+                        withAnimation(.interpolatingSpring().delay(0.5)) {
+                            progress = CGFloat(streak.moneyCount)
+                        }
+                    }
             }.padding(.horizontal)
         }
     }
