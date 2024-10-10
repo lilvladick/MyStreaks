@@ -7,6 +7,7 @@ struct MainScreenView: View {
     
     var body: some View {
         NavigationStack {
+            ProgressCircleView(streaks: streaks).padding(.vertical)
             VStack {
                 List {
                     ForEach(streaks) {streak in
@@ -14,7 +15,7 @@ struct MainScreenView: View {
                             StreakCellView(streak: streak)
                         }
                     }.onDelete(perform: deleteStreak)
-                }
+                }.listStyle(.plain)
             }
             .navigationTitle("All your streaks")
             .toolbar {
