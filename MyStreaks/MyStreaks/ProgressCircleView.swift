@@ -4,8 +4,8 @@ struct ProgressCircleView: View {
     let screenWidth = UIScreen.main.bounds.width
     let screenHeight = UIScreen.main.bounds.height
     let streaks: [Streak]
-    @State private var totalMoneyCount: Float = 0
-    @State private var totalGoal: Float = 0
+    @Binding var totalMoneyCount: Float
+    @Binding var totalGoal: Float
     
     var body: some View {
         HStack{
@@ -22,15 +22,15 @@ struct ProgressCircleView: View {
                 Text("Great results")
                     .font(.title2).bold()
                 Text("\(String(format: "%.2f", totalMoneyCount))$ of \(String(format: "%.2f", totalGoal))$")
-            }.padding(.horizontal, 20).bold()
+            }
+            .padding(.horizontal, 20).bold()
             
-        }.onAppear {
-            totalMoneyCount = streaks.reduce(0) { $0 + $1.moneyCount }
-            totalGoal = Float(streaks.reduce(0) { $0 + $1.goal })
         }
     }
 }
 
 #Preview {
-    ProgressCircleView(streaks: [Streak(name: "My Streak", goal: 1000, moneyCount: 421.0, streakDescription: "My Dream"),Streak(name: "My Streak", goal: 1000, moneyCount: 421.0, streakDescription: "My Dream")])
+    @Previewable @State var totalMoneyCount:Float = 0
+    @Previewable @State var totalGoal:Float = 0
+    ProgressCircleView(streaks: [Streak(name: "My Streak", goal: 1000, moneyCount: 421.0, streakDescription: "My Dream"),Streak(name: "My Streak", goal: 1000, moneyCount: 421.0, streakDescription: "My Dream")], totalMoneyCount: $totalMoneyCount, totalGoal: $totalGoal)
 }

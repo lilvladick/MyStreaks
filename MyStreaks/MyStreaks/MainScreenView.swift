@@ -4,10 +4,12 @@ import SwiftData
 struct MainScreenView: View {
     @Environment(\.modelContext) private var modelContext: ModelContext
     @Query var streaks: [Streak]
+    @State private var totalMoneyCount: Float = 0
+    @State private var totalGoal: Float = 0
     
     var body: some View {
         NavigationStack {
-            ProgressCircleView(streaks: streaks).padding(.vertical)
+            ProgressCircleView(streaks: streaks, totalMoneyCount: $totalMoneyCount, totalGoal: $totalGoal).padding(.vertical)
             VStack {
                 List {
                     ForEach(streaks) {streak in
@@ -35,6 +37,14 @@ struct MainScreenView: View {
                 })
             }
         }
+        .onAppear {
+            progressringUpdate()
+        }
+    }
+    
+    func progressringUpdate() {
+        totalMoneyCount = streaks.reduce(0) { $0 + $1.moneyCount }
+        totalGoal = Float(streaks.reduce(0) { $0 + $1.goal })
     }
     
     func deleteStreak(at offsets: IndexSet) {
@@ -48,6 +58,8 @@ struct MainScreenView: View {
         } catch {
             print(error)
         }
+        
+        progressringUpdate()
     }
 }
 
