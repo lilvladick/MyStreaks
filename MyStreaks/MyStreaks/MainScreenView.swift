@@ -9,7 +9,9 @@ struct MainScreenView: View {
     
     var body: some View {
         NavigationStack {
-            ProgressCircleView(streaks: streaks, totalMoneyCount: $totalMoneyCount, totalGoal: $totalGoal).padding(.vertical)
+            if !streaks.isEmpty {
+                ProgressCircleView(streaks: streaks, totalMoneyCount: $totalMoneyCount, totalGoal: $totalGoal).padding(.vertical)
+            }
             VStack {
                 List {
                     ForEach(streaks) {streak in
@@ -69,7 +71,7 @@ struct MainScreenView: View {
     
     let streaks = [
         Streak(name: "Car", goal: 1000, moneyCount: 800.60, streakDescription: "My Dream Car"),
-        Streak(name: "House", goal: 10000, moneyCount: 1924, streakDescription: "My Dream House")
+        Streak(name: "House", goal: 5000, moneyCount: 1924, streakDescription: "My Dream House")
     ]
     
     streaks.forEach {modelContext.insert($0)}

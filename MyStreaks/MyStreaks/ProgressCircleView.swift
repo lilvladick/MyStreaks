@@ -10,9 +10,12 @@ struct ProgressCircleView: View {
     var body: some View {
         HStack{
             ZStack {
-                Circle().stroke(Color.gray, lineWidth: 15)
+                Circle()
+                    .stroke(Color.gray, lineWidth: 15)
+                    .opacity(0.3)
                     .frame(width: min(screenWidth, screenHeight) * 0.25, height: min(screenWidth, screenHeight) * 0.25)
-                Circle().trim(from: 0, to: min(CGFloat(totalMoneyCount) / CGFloat(totalGoal), 1.0))
+                Circle()
+                    .trim(from: 0, to: min(CGFloat(totalMoneyCount) / CGFloat(totalGoal), 1.0))
                     .stroke(Color.blue, style: StrokeStyle(lineWidth: 15, lineCap: .round, lineJoin: .round))
                     .frame(width: min(screenWidth, screenHeight) * 0.25, height: min(screenWidth, screenHeight) * 0.25)
                     .rotationEffect(Angle(degrees: -90))
@@ -21,7 +24,7 @@ struct ProgressCircleView: View {
             VStack(alignment: .leading) {
                 Text("Great results")
                     .font(.title2).bold()
-                Text("\(String(format: "%.2f", totalMoneyCount))$ of \(String(format: "%.2f", totalGoal))$")
+                Text("\(String(format: "%.2f", totalMoneyCount))$ of \(String(format: "%.0f", totalGoal))$")
             }
             .padding(.horizontal, 20).bold()
             

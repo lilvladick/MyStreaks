@@ -13,7 +13,6 @@ struct StreakCellView: View {
     var body: some View {
         VStack {
             HStack {
-                Image(systemName: "car").padding(.trailing, 10)
                 VStack(alignment: .leading) {
                     Text(streak.name).font(.title3)
                     Text(streak.streakDescription ?? "").font(.caption).foregroundStyle(Color.gray)
@@ -21,7 +20,7 @@ struct StreakCellView: View {
                 Spacer()
                 
                 Text("\(streak.goal) $").bold().font(.title3).padding(.leading, 10)
-            }
+            }.padding(.horizontal)
             
             ZStack(alignment: .leading) {
                 RoundedRectangle(cornerRadius: 30)
@@ -41,7 +40,8 @@ struct StreakCellView: View {
                             progress = CGFloat(streak.moneyCount)
                         }
                     }
-            }.padding(.horizontal)
+            }
+            .padding(.horizontal)
         }
     }
 }
