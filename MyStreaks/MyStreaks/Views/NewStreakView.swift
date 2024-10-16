@@ -21,7 +21,6 @@ struct NewStreakView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 20))
                     .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.height * 0.3)
                     .padding()
-                    .background(Color.clear)
                 Form {
                     Section("Main information"){
                         TextField("Streak Name", text: $name)
@@ -36,7 +35,8 @@ struct NewStreakView: View {
                     Section(){
                         PhotosPicker(
                             selection: $selectedPhoto,
-                            matching: .any(of: [.images, .screenshots])
+                            matching: .any(of: [.images, .screenshots]),
+                            photoLibrary: .shared()
                         ) {
                             Text("Upload Image")
                         }
@@ -58,7 +58,12 @@ struct NewStreakView: View {
             .onChange(of: selectedPhoto) { oldPhoto, newPhoto in
                 Task {
                     if let photo = newPhoto {
-                        image = try? await photo.loadTransferable(type: Image.self)
+                        if let imageData = try? await photo.loadTransferable(type: Data.self),
+                           let uiImage = UIImage(data: imageData) {
+                            image = Image(uiImage: uiImage)
+                        } else {
+                            print("Failed to load image")
+                        }
                     }
                 }
             }
@@ -77,7 +82,7 @@ struct NewStreakView: View {
             try modelContext.save()
             dismiss()
         } catch {
-            let alert = Alert(title: Text("Error"), message: Text(error.localizedDescription))
+            _ = Alert(title: Text("Error"), message: Text(error.localizedDescription))
         }
     }
     
