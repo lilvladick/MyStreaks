@@ -6,6 +6,7 @@ struct MainScreenView: View {
     @Query var streaks: [Streak]
     @State private var totalMoneyCount: Float = 0
     @State private var totalGoal: Float = 0
+    @State private var isPresentingAddStreak: Bool = false
     
     var body: some View {
         NavigationStack {
@@ -32,9 +33,11 @@ struct MainScreenView: View {
                 })
                 ToolbarItem(placement: .topBarTrailing, content: {
                     Button(action: {
-                        
+                        isPresentingAddStreak.toggle()
                     }, label: {
                         Image(systemName: "plus")
+                    }).sheet(isPresented: $isPresentingAddStreak,onDismiss: {progressringUpdate()} ,content: {
+                        NewStreakView()
                     })
                 })
             }

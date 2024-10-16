@@ -21,12 +21,17 @@ struct NewStreakView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 20))
                     .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.height * 0.3)
                     .padding()
+                    .background(Color.clear)
                 Form {
                     Section("Main information"){
                         TextField("Streak Name", text: $name)
+                            .autocapitalization(.none)
+                            .autocorrectionDisabled(true)
                         TextField("Streak Goal", text: $goal)
                             .textContentType(.oneTimeCode)
                             .keyboardType(.numberPad)
+                            .autocapitalization(.none)
+                            .autocorrectionDisabled(true)
                     }
                     Section(){
                         PhotosPicker(
@@ -47,8 +52,8 @@ struct NewStreakView: View {
             }
             .toolbar {
                 Button("Save") {
-                    //saveStreak()
-                }
+                    saveStreak()
+                }.disabled(name.isEmpty && goal.isEmpty)
             }
             .onChange(of: selectedPhoto) { oldPhoto, newPhoto in
                 Task {
@@ -60,25 +65,37 @@ struct NewStreakView: View {
             .navigationTitle("New Streak")
         }
     }
-    /*
+    
     func saveStreak() {
-        let newStreak = Streak(name: name, goal: goal, moneyCount: 0, streakDescription: streakDescription, image: <#T##Data?#>)
+        guard let jpegImage: Data = convertImage(image: image) else { return }
+        
+        let newStreak = Streak(name: name, goal: Int(goal)!, moneyCount: 0, streakDescription: streakDescription, image: jpegImage)
+        
+        modelContext.insert(newStreak)
+        
+        do {
+            try modelContext.save()
+            dismiss()
+        } catch {
+            let alert = Alert(title: Text("Error"), message: Text(error.localizedDescription))
+        }
     }
     
-    func convertImage() {
-        if let image = image {
-            let renderer = ImageRenderer(content: image)
-            if let uiImage = renderer.uiImage {
-                if let data = uiImage.pngData() {
-                   imageData = data
-                   print("Image converted to PNG data")
-               } else if let data = uiImage.jpegData(compressionQuality: 1.0) {
-                   imageData = data
-                   print("Image converted to JPEG data")
-               }
+    @MainActor
+    func convertImage(image: Image?) -> Data?{
+        guard let image = image else { return nil }
+        
+        let renderer = ImageRenderer(content: image)
+        renderer.scale = UIScreen.main.scale
+        
+        if let uiImage = renderer.uiImage {
+            if let jpegData = uiImage.jpegData(compressionQuality: 1.0) {
+                return jpegData
             }
         }
-    }*/
+        
+        return nil
+    }
 }
 
 #Preview {

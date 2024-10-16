@@ -24,7 +24,7 @@ struct StreakCellView: View {
             
             ZStack(alignment: .leading) {
                 RoundedRectangle(cornerRadius: 30)
-                    .frame(width: .infinity, height: 15)
+                    .frame(height: 15)
                     .opacity(0.3)
                     .foregroundColor(.gray)
                 
