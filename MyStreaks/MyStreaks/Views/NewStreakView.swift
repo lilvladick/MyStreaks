@@ -7,10 +7,10 @@ struct NewStreakView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var selectedPhoto: PhotosPickerItem?
     @State private var image: Image?
+    @State private var uiImage: UIImage?
     @State private var name: String = ""
     @State private var streakDescription: String = ""
     @State private var goal: String = ""
-    
     
     var body: some View {
         NavigationStack {
@@ -22,7 +22,7 @@ struct NewStreakView: View {
                     .frame(maxWidth: .infinity, maxHeight: UIScreen.main.bounds.height * 0.3)
                     .padding()
                 Form {
-                    Section("Main information"){
+                    Section("Main information") {
                         TextField("Streak Name", text: $name)
                             .autocapitalization(.none)
                             .autocorrectionDisabled(true)
@@ -32,7 +32,7 @@ struct NewStreakView: View {
                             .autocapitalization(.none)
                             .autocorrectionDisabled(true)
                     }
-                    Section(){
+                    Section() {
                         PhotosPicker(
                             selection: $selectedPhoto,
                             matching: .any(of: [.images, .screenshots]),
@@ -41,7 +41,7 @@ struct NewStreakView: View {
                             Text("Upload Image")
                         }
                     }
-                    Section("Description"){
+                    Section("Description") {
                         TextEditor(text: $streakDescription)
                             .frame(height: 150)
                             .onReceive(streakDescription.publisher.collect()) {
@@ -59,8 +59,9 @@ struct NewStreakView: View {
                 Task {
                     if let photo = newPhoto {
                         if let imageData = try? await photo.loadTransferable(type: Data.self),
-                           let uiImage = UIImage(data: imageData) {
-                            image = Image(uiImage: uiImage)
+                           let img = UIImage(data: imageData) {
+                            uiImage = img
+                            image = Image(uiImage: img)
                         } else {
                             print("Failed to load image")
                         }
@@ -72,9 +73,14 @@ struct NewStreakView: View {
     }
     
     func saveStreak() {
-        guard let jpegImage: Data = convertImage(image: image) else { return }
+        guard let jpegImage: Data = convertImage(image: uiImage) else { return }
+
+        guard let goalInt = Int(goal) else {
+            print("Invalid goal value")
+            return
+        }
         
-        let newStreak = Streak(name: name, goal: Int(goal)!, moneyCount: 0, streakDescription: streakDescription, image: jpegImage)
+        let newStreak = Streak(name: name, goal: goalInt, moneyCount: 0, streakDescription: streakDescription, image: jpegImage)
         
         modelContext.insert(newStreak)
         
@@ -82,24 +88,15 @@ struct NewStreakView: View {
             try modelContext.save()
             dismiss()
         } catch {
-            _ = Alert(title: Text("Error"), message: Text(error.localizedDescription))
+            print("Error saving streak: \(error.localizedDescription)")
         }
     }
+
     
     @MainActor
-    func convertImage(image: Image?) -> Data?{
+    func convertImage(image: UIImage?) -> Data? {
         guard let image = image else { return nil }
-        
-        let renderer = ImageRenderer(content: image)
-        renderer.scale = UIScreen.main.scale
-        
-        if let uiImage = renderer.uiImage {
-            if let jpegData = uiImage.jpegData(compressionQuality: 1.0) {
-                return jpegData
-            }
-        }
-        
-        return nil
+        return image.jpegData(compressionQuality: 1.0) 
     }
 }
 
