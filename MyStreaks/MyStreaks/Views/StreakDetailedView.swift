@@ -31,36 +31,38 @@ struct StreakDetailedView: View {
                         .padding()
                 }
                 
+                TextField("Streak Name", text: $name)
+                    .autocapitalization(.none)
+                    .autocorrectionDisabled(true)
+                TextField("Streak Goal", text: $goal)
+                    .textContentType(.oneTimeCode)
+                    .keyboardType(.numberPad)
+                    .autocapitalization(.none)
+                    .autocorrectionDisabled(true)
+                TextEditor(text: $streakDescription)
+                    .frame(height: 150)
+                    .onReceive(streakDescription.publisher.collect()) {
+                        self.streakDescription = String($0.prefix(150))
+                    }
+                    .font(.title3.weight(.regular))
+                    .padding(.vertical, 12)
+                    .padding(.horizontal, 16)
+                    .background(
+                        RoundedRectangle(cornerRadius: 10)
+                            .stroke(Color.gray, lineWidth: 1)
+                    )
                 
-                Form {
-                    Section("Main information"){
-                        TextField("Streak Name", text: $name)
-                            .autocapitalization(.none)
-                            .autocorrectionDisabled(true)
-                        TextField("Streak Goal", text: $goal)
-                            .textContentType(.oneTimeCode)
-                            .keyboardType(.numberPad)
-                            .autocapitalization(.none)
-                            .autocorrectionDisabled(true)
-                    }
-                    Section(){
-                        PhotosPicker(
-                            selection: $selectedPhoto,
-                            matching: .any(of: [.images, .screenshots]),
-                            photoLibrary: .shared()
-                        ) {
-                            Text("Upload Image")
-                        }
-                    }
-                    Section("Description"){
-                        TextEditor(text: $streakDescription)
-                            .frame(height: 150)
-                            .onReceive(streakDescription.publisher.collect()) {
-                                self.streakDescription = String($0.prefix(150))
-                            }
-                    }
-                }
-            }
+                PhotosPicker(
+                    selection: $selectedPhoto,
+                    matching: .any(of: [.images, .screenshots]),
+                    photoLibrary: .shared()
+                ) {
+                    Text("Upload Image")
+                }.buttonStyle(CustomButtonStyle())
+                    
+                Spacer()
+            }.textFieldStyle(CustomTextFieldStyle())
+                .padding()
             .toolbar {
                 Button("Update") {
                     
