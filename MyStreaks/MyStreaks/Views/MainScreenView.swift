@@ -18,8 +18,13 @@ struct MainScreenView: View {
                     ForEach(streaks) {streak in
                         NavigationLink(destination: StreakDetailedView(streak: streak)) {
                             StreakCellView(streak: streak)
-                        }
-                    }.onDelete(perform: deleteStreak)
+                        }.swipeActions(edge: .leading, allowsFullSwipe: true, content: {
+                            Button("Add/Remove"){
+                                
+                            }
+                        })
+                    }
+                    .onDelete(perform: deleteStreak)
                 }.listStyle(.plain)
             }
             .navigationTitle("All your streaks")
