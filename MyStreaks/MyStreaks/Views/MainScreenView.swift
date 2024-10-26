@@ -7,6 +7,7 @@ struct MainScreenView: View {
     @State private var totalMoneyCount: Float = 0
     @State private var totalGoal: Float = 0
     @State private var isPresentingAddStreak: Bool = false
+    @State private var isPresentingAddRemoveMoney: Bool = false
     
     var body: some View {
         NavigationStack {
@@ -18,14 +19,20 @@ struct MainScreenView: View {
                     ForEach(streaks) {streak in
                         NavigationLink(destination: StreakDetailedView(streak: streak)) {
                             StreakCellView(streak: streak)
-                        }.swipeActions(edge: .leading, allowsFullSwipe: true, content: {
+                        }
+                        .sheet(isPresented: $isPresentingAddRemoveMoney) {
+                            AddRemoveMoneyView(streak: streak)
+                                .presentationDetents([.fraction(0.30)])
+                        }
+                        .swipeActions(edge: .leading, allowsFullSwipe: true, content: {
                             Button("Add/Remove"){
-                                
+                                isPresentingAddRemoveMoney.toggle()
                             }
                         })
                     }
                     .onDelete(perform: deleteStreak)
-                }.listStyle(.plain)
+                }
+                .listStyle(.plain)
             }
             .navigationTitle("All your streaks")
             .toolbar {
