@@ -1,15 +1,8 @@
 import SwiftUI
 
 struct StreakCellView: View {
-    @State var progress: CGFloat = 0
     let streak: Streak
-    @State private var maxProgress: CGFloat
 
-    init(streak: Streak) {
-        self.streak = streak
-        self._maxProgress = State(initialValue: CGFloat(streak.goal))
-    }
-    
     var body: some View {
         VStack {
             HStack {
@@ -30,16 +23,12 @@ struct StreakCellView: View {
                 
                 RoundedRectangle(cornerRadius: 30)
                     .frame(
-                        width: progress / maxProgress * UIScreen.main.bounds.width * 0.7,
+                        width: (CGFloat(streak.moneyCount) / CGFloat(streak.goal)) * UIScreen.main.bounds.width * 0.7,
                         height: 15
                     )
                     .foregroundColor(.blue)
                     .transition(.move(edge: .trailing))
-                    .onAppear {
-                        withAnimation(.interpolatingSpring().delay(0.5)) {
-                            progress = CGFloat(streak.moneyCount)
-                        }
-                    }
+                    .animation(.interpolatingSpring().delay(0.5), value: streak.moneyCount)
             }
             .padding(.horizontal)
         }

@@ -7,28 +7,25 @@ struct MainScreenView: View {
     @State private var totalMoneyCount: Float = 0
     @State private var totalGoal: Float = 0
     @State private var isPresentingAddStreak: Bool = false
-    @State private var isPresentingAddRemoveMoney: Bool = false
+    @State private var selectedStreak: Streak?
     
     var body: some View {
         NavigationStack {
             if !streaks.isEmpty {
-                ProgressCircleView(streaks: streaks, totalMoneyCount: $totalMoneyCount, totalGoal: $totalGoal).padding(.vertical)
+                ProgressCircleView(streaks: streaks, totalMoneyCount: $totalMoneyCount, totalGoal: $totalGoal)
+                    .padding(.vertical)
             }
             VStack {
                 List {
-                    ForEach(streaks) {streak in
+                    ForEach(streaks) { streak in
                         NavigationLink(destination: StreakDetailedView(streak: streak)) {
                             StreakCellView(streak: streak)
                         }
-                        .sheet(isPresented: $isPresentingAddRemoveMoney) {
-                            AddRemoveMoneyView(streak: streak)
-                                .presentationDetents([.fraction(0.30)])
-                        }
-                        .swipeActions(edge: .leading, allowsFullSwipe: true, content: {
-                            Button("Add/Remove"){
-                                isPresentingAddRemoveMoney.toggle()
+                        .swipeActions(edge: .leading, allowsFullSwipe: true) {
+                            Button("Add/Remove") {
+                                selectedStreak = streak
                             }
-                        })
+                        }
                     }
                     .onDelete(perform: deleteStreak)
                 }
@@ -36,22 +33,27 @@ struct MainScreenView: View {
             }
             .navigationTitle("All your streaks")
             .toolbar {
-                ToolbarItem(placement: .topBarLeading, content: {
-                    Button(action: {
-                        
-                    }, label: {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        // Settings action
+                    } label: {
                         Image(systemName: "gearshape")
-                    })
-                })
-                ToolbarItem(placement: .topBarTrailing, content: {
-                    Button(action: {
+                    }
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
                         isPresentingAddStreak.toggle()
-                    }, label: {
+                    } label: {
                         Image(systemName: "plus")
-                    }).sheet(isPresented: $isPresentingAddStreak,onDismiss: {progressringUpdate()} ,content: {
+                    }
+                    .sheet(isPresented: $isPresentingAddStreak, onDismiss: { progressringUpdate() }) {
                         NewStreakView()
-                    })
-                })
+                    }
+                }
+            }
+            .sheet(item: $selectedStreak, onDismiss: { progressringUpdate() }) { streak in
+                AddRemoveMoneyView(streak: streak)
+                    .presentationDetents([.fraction(0.4)])
             }
         }
         .onAppear {
